@@ -207,6 +207,8 @@ RCT_EXPORT_METHOD(startDFU:(NSString *)deviceAddress
     } else {
       NSUUID * uuid = [[NSUUID alloc] initWithUUIDString:deviceAddress];
 
+      [NSThread sleepForTimeInterval: 1];
+
       NSArray<CBPeripheral *> * peripherals = [centralManager retrievePeripheralsWithIdentifiers:@[uuid]];
 
       if ([peripherals count] != 1) {
@@ -227,6 +229,9 @@ RCT_EXPORT_METHOD(startDFU:(NSString *)deviceAddress
         initiator.delegate = self;
         initiator.progressDelegate = self;
         initiator.alternativeAdvertisingNameEnabled = alternativeAdvertisingNameEnabled;
+        initiator.packetReceiptNotificationParameter = 1; //Rate limit the DFU using PRN.
+
+        [NSThread sleepForTimeInterval: 2];
 
         DFUServiceController * controller = [initiator start];
       }
