@@ -9,6 +9,8 @@
 @property (strong, nonatomic) RCTPromiseResolveBlock resolve;
 @property (strong, nonatomic) RCTPromiseRejectBlock reject;
 
+@property (strong, nonatomic) DFUServiceController * controller;
+
 + (void)setCentralManagerGetter:(CBCentralManager * (^)())getter;
 + (void)setOnDFUComplete:(void (^)())onComplete;
 + (void)setOnDFUError:(void (^)())onError;

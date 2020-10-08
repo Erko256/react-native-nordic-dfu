@@ -182,6 +182,21 @@ didOccurWithMessage:(NSString * _Nonnull)message
   NSLog(@"logWith: %ld message: '%@'", (long)level, message);
 }
 
+RCT_EXPORT_METHOD(abortDFU:(NSString *)deviceAddress
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  if(deviceAddress == self.deviceAddress){
+    if(self.controller.abort()){
+      resolve()
+    }else{
+      reject(@"controller_abort", @"Unable to abort DFU", nil );
+    }
+  } else {
+    reject(@"controller_abort", @"Unknown device address", nil );
+  }
+}
+
 RCT_EXPORT_METHOD(startDFU:(NSString *)deviceAddress
                   deviceName:(NSString *)deviceName
                   filePath:(NSString *)filePath
@@ -229,15 +244,13 @@ RCT_EXPORT_METHOD(startDFU:(NSString *)deviceAddress
         initiator.delegate = self;
         initiator.progressDelegate = self;
         initiator.alternativeAdvertisingNameEnabled = alternativeAdvertisingNameEnabled;
-        initiator.packetReceiptNotificationParameter = 1; //Rate limit the DFU using PRN.
 
-        [NSThread sleepForTimeInterval: 2];
-
-        DFUServiceController * controller = [initiator start];
+        self.controller = [initiator start];
       }
     }
   }
 }
+
 
 + (void)setCentralManagerGetter:(CBCentralManager * (^)())getter
 {
