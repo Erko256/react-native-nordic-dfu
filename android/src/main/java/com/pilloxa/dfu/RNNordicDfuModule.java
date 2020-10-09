@@ -5,7 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
@@ -19,6 +19,7 @@ public class RNNordicDfuModule extends ReactContextBaseJavaModule implements Lif
     public static final String LOG_TAG = name;
     private final ReactApplicationContext reactContext;
     private Promise mPromise = null;
+    private DfuServiceController controller = null;
 
     public RNNordicDfuModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -39,7 +40,32 @@ public class RNNordicDfuModule extends ReactContextBaseJavaModule implements Lif
         }
         starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
         starter.setZip(filePath);
-        final DfuServiceController controller = starter.start(this.reactContext, DfuService.class);
+        controller = starter.start(this.reactContext, DfuService.class);
+    }
+
+    @ReactMethod
+    public void abortDFU(String address, Promise promise) {
+        mPromise = promise;
+        controller.abort();
+    }
+
+    // does not exsists
+    // @ReactMethod
+    // public void restartDFU(String address, Promise promise) {
+    //     mPromise = promise;
+    //     controller.restart(this.reactContext, DfuService.class);
+    // }
+
+    @ReactMethod
+    public void pauseDFU(String address, Promise promise) {
+        mPromise = promise;
+        controller.pause();
+    }
+
+    @ReactMethod
+    public void resumeDFU(String address, Promise promise) {
+        mPromise = promise;
+        controller.resume();
     }
 
     @Override
