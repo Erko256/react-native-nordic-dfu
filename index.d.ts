@@ -17,6 +17,24 @@ declare module 'react-native-nordic-dfu' {
     }: {
       deviceAddress: string;
     }): Promise<string>;
+
+    static pauseDFU({
+      deviceAddress
+    }: {
+      deviceAddress: string;
+    }): Promise<string>;
+
+    static resumeDFU({
+      deviceAddress
+    }: {
+      deviceAddress: string;
+    }): Promise<string>;
+
+    static restartDFU({
+      deviceAddress
+    }: {
+      deviceAddress: string;
+    }): Promise<string>;
   }
 
   export interface IDfuUpdate {

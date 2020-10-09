@@ -1,6 +1,6 @@
 import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 const { RNNordicDfu } = NativeModules;
-const NordicDFU = { startDFU };
+const NordicDFU = { startDFU, abortDFU, pauseDFU, resumeDFU, restartDFU };
 
 function rejectPromise(message) {
   return new Promise((resolve, reject) => {
@@ -51,10 +51,47 @@ function startDFU({
     return rejectPromise("No filePath defined");
   }
   const upperDeviceAddress = deviceAddress.toUpperCase();
-  if (Platform.OS === 'ios') {
-    return RNNordicDfu.startDFU(upperDeviceAddress, deviceName, filePath, alternativeAdvertisingNameEnabled);
+  if (Platform.OS === "ios") {
+    return RNNordicDfu.startDFU(
+      upperDeviceAddress,
+      deviceName,
+      filePath,
+      alternativeAdvertisingNameEnabled
+    );
   }
   return RNNordicDfu.startDFU(upperDeviceAddress, deviceName, filePath);
+}
+
+function abortDFU({ deviceAddress }) {
+  if (deviceAddress == undefined) {
+    return Promise.reject("NordicDFU.abortDFU: No deviceAddress defined");
+  }
+  const upperDeviceAddress = deviceAddress.toUpperCase();
+  return RNNordicDfu.abortDFU(upperDeviceAddress);
+}
+
+function pauseDFU({ deviceAddress }) {
+  if (deviceAddress == undefined) {
+    return Promise.reject("NordicDFU.pauseDFU: No deviceAddress defined");
+  }
+  const upperDeviceAddress = deviceAddress.toUpperCase();
+  return RNNordicDfu.pauseDFU(upperDeviceAddress);
+}
+
+function resumeDFU({ deviceAddress }) {
+  if (deviceAddress == undefined) {
+    return Promise.reject("NordicDFU.resumeDFU: No deviceAddress defined");
+  }
+  const upperDeviceAddress = deviceAddress.toUpperCase();
+  return RNNordicDfu.resumeDFU(upperDeviceAddress);
+}
+
+function restartDFU({ deviceAddress }) {
+  if (deviceAddress == undefined) {
+    return Promise.reject("NordicDFU.restartDFU: No deviceAddress defined");
+  }
+  const upperDeviceAddress = deviceAddress.toUpperCase();
+  return RNNordicDfu.restartDFU(upperDeviceAddress);
 }
 
 /**

@@ -186,8 +186,8 @@ RCT_EXPORT_METHOD(abortDFU:(NSString *)deviceAddress
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if(deviceAddress == self.deviceAddress){
-    if(self.controller.abort()){
+  if([deviceAddress isEqualToString:self.deviceAddress]){
+    if(self.controller.abort{
       resolve()
     }else{
       reject(@"controller_abort", @"Unable to abort DFU", nil );
@@ -195,6 +195,57 @@ RCT_EXPORT_METHOD(abortDFU:(NSString *)deviceAddress
   } else {
     reject(@"controller_abort", @"Unknown device address", nil );
   }
+}
+
+RCT_EXPORT_METHOD(pauseDFU:(NSString *)deviceAddress
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+   if([deviceAddress isEqualToString:self.deviceAddress]){
+       [[self controller]pause];
+       if(self.controller.paused){
+        NSDictionary * resolveBody = @{@"deviceAddress": self.deviceAddress};
+        resolve(resolveBody);
+    }else{
+        reject(@"controller_pause", @"Unable to pause DFU", nil );
+    }
+   } else {
+     reject(@"controller_pause", @"Unknown device address", nil );
+   }
+}
+
+RCT_EXPORT_METHOD(resumeDFU:(NSString *)deviceAddress
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+   if([deviceAddress isEqualToString:self.deviceAddress]){
+   [[self controller]resume];
+    if(!self.controller.paused){
+        NSDictionary * resolveBody = @{@"deviceAddress": self.deviceAddress};
+        resolve(resolveBody);
+    }else{
+        reject(@"controller_resume", @"Unable to resume DFU", nil );
+    }
+   } else {
+     reject(@"controller_resume", @"Unknown device address", nil );
+   }
+}
+
+RCT_EXPORT_METHOD(restartDFU:(NSString *)deviceAddress
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+   if([deviceAddress isEqualToString:self.deviceAddress]){
+   [[self controller]restart];
+    if(!self.controller.aborted && !self.controller.paused){
+        NSDictionary * resolveBody = @{@"deviceAddress": self.deviceAddress};
+        resolve(resolveBody);
+    }else{
+        reject(@"controller_restart", @"Unable to restart DFU", nil );
+    }
+   } else {
+     reject(@"controller_restart", @"Unknown device address", nil );
+   }
 }
 
 RCT_EXPORT_METHOD(startDFU:(NSString *)deviceAddress
