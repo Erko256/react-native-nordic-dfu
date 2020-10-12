@@ -20,6 +20,7 @@ public class RNNordicDfuModule extends ReactContextBaseJavaModule implements Lif
     private final ReactApplicationContext reactContext;
     private Promise mPromise = null;
     private DfuServiceController controller = null;
+    private String deviceAddress = null;
 
     public RNNordicDfuModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -41,12 +42,17 @@ public class RNNordicDfuModule extends ReactContextBaseJavaModule implements Lif
         starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
         starter.setZip(filePath);
         controller = starter.start(this.reactContext, DfuService.class);
+        deviceAddress = address;
     }
 
     @ReactMethod
     public void abortDFU(String address, Promise promise) {
-        mPromise = promise;
-        controller.abort();
+        if(deviceAddress.equals(address)){
+            mPromise = promise;
+            controller.abort();
+        } else {
+            promise.reject("abort_dfu", "Device address mismatch!");
+        }
     }
 
     // does not exsists
@@ -58,14 +64,22 @@ public class RNNordicDfuModule extends ReactContextBaseJavaModule implements Lif
 
     @ReactMethod
     public void pauseDFU(String address, Promise promise) {
-        mPromise = promise;
-        controller.pause();
+        if(deviceAddress.equals(address)){
+            mPromise = promise;
+            controller.pause();
+        } else {
+            promise.reject("pause_dfu", "Device address mismatch!");
+        }
     }
 
     @ReactMethod
     public void resumeDFU(String address, Promise promise) {
-        mPromise = promise;
-        controller.resume();
+        if(deviceAddress.equals(address)){
+            mPromise = promise;
+            controller.resume();
+        } else {
+            promise.reject("resume_dfu", "Device address mismatch!");
+        }
     }
 
     @Override
